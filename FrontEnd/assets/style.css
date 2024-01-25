@@ -475,3 +475,6 @@ option {
 	position: absolute;
 	z-index: -1;
 }
+.error {
+	box-shadow: 0px 4px 14px rgb(247, 2, 2);
+}
