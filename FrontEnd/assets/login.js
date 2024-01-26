@@ -27,8 +27,9 @@ form.addEventListener("submit",(event) =>  {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-        email: element.email.value,
-        password: element.password.value,
+        email: form.email.value,
+        password: form.password.value,
+        
         }),
         })
         .then((response) => response.json())
@@ -36,7 +37,9 @@ form.addEventListener("submit",(event) =>  {
             sessionStorage.setItem("Token", data.token);
 
             if (data.message || data.error) {
-                alert("Erreur dans l\'identifiant ou le mot de passe");
+                ("Erreur dans l\'identifiant ou le mot de passe");
+                messageErreur.textContent = "Erreur dans l\'identifiant ou le mot de passe"
+                //alert("Erreur dans l\'identifiant ou le mot de passe");
             } else {
                 sessionStorage.setItem("isConnected", JSON.stringify(true));
                 window.location.replace("index.html");

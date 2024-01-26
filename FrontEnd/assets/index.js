@@ -87,3 +87,52 @@ async function filtercategory(){
     })
 }
 filtercategory()
+
+//if user's conected//
+
+
+const loged= (JSON.parse(sessionStorage.getItem("isConnected"))) 
+console.log(loged)
+const logout = document.querySelector(".login")
+console.log(logout)
+
+function adminUserMode() {
+    if (loged == true){
+      //Hide filter
+      filter.style.display="none"
+      //change login to logout
+      logout.textContent = "logout";
+      //display top menu bar
+      const body = document.querySelector("body");
+      const topMenu = document.createElement("div");
+      const editMode = document.createElement("p");
+  
+      topMenu.className = "topMenu";
+      editMode.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>Mode édition`;
+     
+      body.insertAdjacentElement("afterbegin", topMenu);
+      topMenu.append(editMode);
+      //edit buttons
+      const editBtn = `<p class="editBtn"><i class="fa-regular fa-pen-to-square"></i>Modifier</p>`;
+      document.querySelector("#portfolio h2").insertAdjacentHTML("afterend", editBtn);
+      //event listener modal
+      document.querySelector("#portfolio p").addEventListener("click", openModal);
+    }else{
+        
+    }
+}
+  
+adminUserMode()
+
+
+//If user's disconcted//
+
+
+logout.addEventListener("click", () => {
+    logout.preventDefault();
+   
+    loged = false
+    sessionStorage.removeItem("Token");
+    sessionStorage.removeItem("isConnected");
+    window.location.replace("login.html");
+});
