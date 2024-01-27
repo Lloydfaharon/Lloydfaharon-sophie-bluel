@@ -39,9 +39,8 @@ form.addEventListener("submit",(event) =>  {
             if (data.message || data.error) {
                 ("Erreur dans l\'identifiant ou le mot de passe");
                 messageErreur.textContent = "Erreur dans l\'identifiant ou le mot de passe"
-                //alert("Erreur dans l\'identifiant ou le mot de passe");
             } else {
-                sessionStorage.setItem("isConnected", JSON.stringify(true));
+                window.sessionStorage.setItem("isConnected", JSON.stringify(true));
                 window.location.replace("index.html");
             }
         })

@@ -417,7 +417,7 @@ footer nav ul {
 	font-size: 10px;
 	font-weight: 400;
 }
-#picture {
+.picture {
 	margin-bottom: 27px;
 	width: 5.1em;
 }
@@ -429,6 +429,11 @@ footer nav ul {
 	justify-content: center;
 }
 #picturePreview img {
+	height: 100%;
+	width: 31%;
+	object-fit: cover;
+}
+#picturePrevie img {
 	height: 100%;
 	width: 31%;
 	object-fit: cover;

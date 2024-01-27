@@ -93,33 +93,36 @@ filtercategory()
 
 const loged= (JSON.parse(sessionStorage.getItem("isConnected"))) 
 console.log(loged)
-const logout = document.querySelector(".login")
+const logout = document.getElementById("logBtn")
 console.log(logout)
+const editBtn = `<p class="editBtn"><i class="fa-regular fa-pen-to-square"></i>Modifier</p>`;
+
 
 function adminUserMode() {
     if (loged == true){
       //Hide filter
       filter.style.display="none"
+
       //change login to logout
       logout.textContent = "logout";
+
       //display top menu bar
       const body = document.querySelector("body");
       const topMenu = document.createElement("div");
       const editMode = document.createElement("p");
-  
       topMenu.className = "topMenu";
       editMode.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>Mode édition`;
-     
       body.insertAdjacentElement("afterbegin", topMenu);
       topMenu.append(editMode);
+
       //edit buttons
-      const editBtn = `<p class="editBtn"><i class="fa-regular fa-pen-to-square"></i>Modifier</p>`;
       document.querySelector("#portfolio h2").insertAdjacentHTML("afterend", editBtn);
       //event listener modal
-      document.querySelector("#portfolio p").addEventListener("click", openModal);
-    }else{
-        
-    }
+      //document.querySelector("#portfolio p").addEventListener("click", openModal);
+
+      
+      
+    }//else(loged == false)
 }
   
 adminUserMode()
@@ -127,12 +130,70 @@ adminUserMode()
 
 //If user's disconcted//
 
-
 logout.addEventListener("click", () => {
-    logout.preventDefault();
-   
-    loged = false
+
     sessionStorage.removeItem("Token");
-    sessionStorage.removeItem("isConnected");
+    window.sessionStorage.setItem("isConnected", JSON.stringify(false));
     window.location.replace("login.html");
+        
+       
+});  
+
+// Afficher la modale //      
+const btned = document.querySelector("#portfolio p ")
+const containerModal =document.querySelector(".modal")
+const closeXmark = document.getElementById("closeModale")
+
+ 
+btned.addEventListener ("click",() => {
+
+    containerModal.style.display="flex"   
+})
+
+//close the modale//
+closeXmark.addEventListener ("click",() => {
+
+    containerModal.style.display="none";  
+})
+containerModal.addEventListener ("click",(e) => {
+    console.log(e.target.className);
+    if(e.target.className =="containerModal" ) {
+        containerModal.style.display="none"
+    }
 });
+
+  
+//put images inside in the modal//
+  
+
+
+const modalCmt = document.querySelector (".modalContent")
+console.log(modalCmt)
+  
+async function displayGaleriePhoto() {
+    modalCmt.innerHTML= ""
+    const photo = await getWorks();
+    console.log(photo)
+    photo.forEach((work) =>{
+        const figure = document.createElement("figure")
+        const img = document.createElement("img")
+        const span = document.createElement("span")
+        const trash =document.createElement("i")
+        trash.classList.add ("fa-solid","fa-trash-can")
+        trash.id = work.id
+        img.src= work.imageUrl
+        img.classList.add ("gallery" )
+        
+        span.appendChild(trash)
+        figure.appendChild(span)
+        figure.appendChild(img)
+        modalCmt.appendChild(figure)
+
+
+    })
+
+}
+
+displayGaleriePhoto()
+
+
