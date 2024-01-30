@@ -3,10 +3,10 @@
 
 /***** variables *****/
 getWorks();
-affichageWorks();
-getCategorys();
-getCategorysButtons()
-displayWorks()
+
+
+
+
 
 
 const gallery = document.getElementById("gal");
@@ -21,12 +21,13 @@ async function getWorks() {
 }
 
 async function displayWorks() {
+    gallery.innerHTML = "";
     const works = await getWorks ();
     works.forEach((work) => {
         affichageWorks(work);
-    })
+    });
 }
-
+displayWorks()
 
 async function affichageWorks(work) {
    
@@ -40,6 +41,7 @@ async function affichageWorks(work) {
     figure.appendChild(figcaption);
     
 }
+affichageWorks();
 
 
 //recuperer le tableau des categories//
@@ -48,6 +50,7 @@ async function getCategorys(){
     const response = await fetch("http://localhost:5678/api/categories");
     return await response.json();
 }
+getCategorys();
 
 async function getCategorysButtons(){
     const categorie = await getCategorys();
@@ -61,6 +64,7 @@ async function getCategorysButtons(){
 
      })
 }
+getCategorysButtons()
 //filtre au click sur le bouton par categories//
 
 async function filtercategory(){
@@ -156,9 +160,9 @@ closeXmark.addEventListener ("click",() => {
     containerModal.style.display="none";  
 })
 containerModal.addEventListener ("click",(e) => {
-    console.log(e.target.className);
-    if(e.target.className =="containerModal" ) {
-        containerModal.style.display="none"
+    //console.log(e.target.className);
+    if (e.target.className =="containerModal") {
+        containerModal.style.display="none";
     }
 });
 
@@ -168,7 +172,7 @@ containerModal.addEventListener ("click",(e) => {
 
 
 const modalCmt = document.querySelector (".modalContent")
-console.log(modalCmt)
+//console.log(modalCmt)
   
 async function displayGaleriePhoto() {
     modalCmt.innerHTML= ""
@@ -178,8 +182,9 @@ async function displayGaleriePhoto() {
         const figure = document.createElement("figure")
         const img = document.createElement("img")
         const span = document.createElement("span")
-        const trash =document.createElement("i")
-        trash.classList.add ("fa-solid","fa-trash-can")
+        const trash = document.createElement("i")
+
+        trash.classList.add ("fa-solid","fa-trash-can",)
         trash.id = work.id
         img.src= work.imageUrl
         img.classList.add ("gallery" )
@@ -189,11 +194,90 @@ async function displayGaleriePhoto() {
         figure.appendChild(img)
         modalCmt.appendChild(figure)
 
-
-    })
+    });
+    deleteWork()
 
 }
-
 displayGaleriePhoto()
 
+//DELETE work event listener handler
+const deleteBtn = function (e) {
+    e.preventDefault();
+    //clicked button
+    if (e.target.matches(".fa-trash-can")) {
+      deleteWork(e.target.id);
+    }
+  };
+  
+  //API call for DELETE route
+  function deleteWork(i) {
+    //authentify user and send API response
+    let token = sessionStorage.getItem("token");
+    fetch("http://localhost:5678/api/works/" + i, {
+      method: "DELETE",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    }).then((response) => {
+      //if response is positive, update the works gallery accordingly
+      if (response.ok) {
+        alert("Projet supprimé avec succés")
+        //delete work from worksData array
+        worksData = worksData.filter((work) => work.id != i);
+        //display updated galleries
+        displayGalleryPhoto(worksData);
+        displayWorks(worksData);
+        //if response is negative report an error
+      } else {
+        //alert("Erreur : " + response.status);
+        //closeModal;
+      }
+    });
+  }
 
+//Faire aparaitre la deuxieme modale un fois son html fini
+const btnAddModal = document.getElementById("addPictureBtn");
+const modalAddPix = document.getElementById("addPicture");
+const modalPix = document.getElementById("editGallery");
+const arrowL = document.querySelector(".modalHeader .fa-arrow-left");
+const markAdd = document.getElementById("closeModale2");
+
+
+function displayAddModal() {
+  btnAddModal.addEventListener("click", () => {
+    modalAddPix.style.display = "flex";
+    modalPix.style.display = "none";
+  });
+  arrowL.addEventListener("click", () => {
+    modalAddPix.style.display = "none";
+    modalPix.style.display = "flex";
+  });
+  markAdd.addEventListener("click", () => {
+    modalCmt.style.display = "none";
+    window.location = "index.html";
+  });
+}
+displayAddModal();  
+// faire la prévisualisation
+const previewImg = document.getElementById("picture");
+const inputFile = document.querySelector(".modalWrapper input");
+const labelFile = document.querySelector(".modalWrapper label");
+//const iconFile = document.querySelector(".modalWrapper .fa-image");
+const pFile = document.getElementById("pp");
+
+//Ecouter les changement sur l'input file
+inputFile.addEventListener("change", () => {
+  const file = inputFile.files[0];
+  console.log(file);
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      previewImg.src = e.target.result;
+      previewImg.style.display = "flex";
+      labelFile.style.display = "none";
+      //iconFile.style.display = "none";
+      pFile.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+});
