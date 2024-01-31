@@ -157,22 +157,21 @@ btned.addEventListener ("click",() => {
 //close the modale//
 closeXmark.addEventListener ("click",() => {
 
-    containerModal.style.display="none";  
+  containerModal.style.display="none";  
 })
+
 containerModal.addEventListener ("click",(e) => {
-    //console.log(e.target.className);
-    if (e.target.className =="containerModal") {
-        containerModal.style.display="none";
-    }
+  console.log(e.target.className);
+  if (e.target.className == ("modal")) {
+    containerModal.style.display="none";
+  }
 });
 
   
 //put images inside in the modal//
   
-
-
 const modalCmt = document.querySelector (".modalContent")
-//console.log(modalCmt)
+console.log(modalCmt)
   
 async function displayGaleriePhoto() {
     modalCmt.innerHTML= ""
@@ -184,10 +183,13 @@ async function displayGaleriePhoto() {
         const span = document.createElement("span")
         const trash = document.createElement("i")
 
+
         trash.classList.add ("fa-solid","fa-trash-can",)
+        span.classList.add ("miniWork")
+        
         trash.id = work.id
         img.src= work.imageUrl
-        img.classList.add ("gallery" )
+        img.classList.add ("imgGallery" )
         
         span.appendChild(trash)
         figure.appendChild(span)
@@ -196,47 +198,12 @@ async function displayGaleriePhoto() {
 
     });
     deleteWork()
-
 }
 displayGaleriePhoto()
 
-//DELETE work event listener handler
-const deleteBtn = function (e) {
-    e.preventDefault();
-    //clicked button
-    if (e.target.matches(".fa-trash-can")) {
-      deleteWork(e.target.id);
-    }
-  };
-  
-  //API call for DELETE route
-  function deleteWork(i) {
-    //authentify user and send API response
-    let token = sessionStorage.getItem("token");
-    fetch("http://localhost:5678/api/works/" + i, {
-      method: "DELETE",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    }).then((response) => {
-      //if response is positive, update the works gallery accordingly
-      if (response.ok) {
-        alert("Projet supprimé avec succés")
-        //delete work from worksData array
-        worksData = worksData.filter((work) => work.id != i);
-        //display updated galleries
-        displayGalleryPhoto(worksData);
-        displayWorks(worksData);
-        //if response is negative report an error
-      } else {
-        //alert("Erreur : " + response.status);
-        //closeModal;
-      }
-    });
-  }
-
-//Faire aparaitre la deuxieme modale un fois son html fini
+//Faire aparaitre la deuxieme modale 
 const btnAddModal = document.getElementById("addPictureBtn");
+console.log(btnAddModal)
 const modalAddPix = document.getElementById("addPicture");
 const modalPix = document.getElementById("editGallery");
 const arrowL = document.querySelector(".modalHeader .fa-arrow-left");
@@ -244,6 +211,7 @@ const markAdd = document.getElementById("closeModale2");
 
 
 function displayAddModal() {
+     
   btnAddModal.addEventListener("click", () => {
     modalAddPix.style.display = "flex";
     modalPix.style.display = "none";
@@ -256,28 +224,153 @@ function displayAddModal() {
     modalCmt.style.display = "none";
     window.location = "index.html";
   });
+};
+
+displayAddModal(); 
+
+//DELETE work event listener handler
+
+function deleteWithTrash() {
+  let deleteBtn = document.querySelectorAll(".fa-trash-can");
+  for (let i = 0; i < deleteBtn.length; i++) {
+      deleteBtn[i].addEventListener("click", deleteWork);
+  }}
+//const deleteBtn = function (e) {
+    //e.preventDefault();
+    //clicked button
+    //if (e.target.matches(".fa-trash-can")) {
+      //deleteWork(e.target.id);
+    //}
+//};
+  
+//API call for DELETE route
+  //function deleteWork(i) {
+    //authentify user and send API response
+    //let token = sessionStorage.getItem("token");
+    //fetch("http://localhost:5678/api/works/" + i, {
+      //method: "DELETE",
+      //headers: {
+        //accept: "*/*",
+        //authorization: `Bearer ${token}`,
+      //},
+   // }).then((response) => {
+      //if response is positive, update the works gallery accordingly
+      //if (response.ok) {
+        //alert("Projet supprimé avec succés")
+        //delete work from worksData array
+       // worksData = worksData.filter((work) => work.id != i);
+        //display updated galleries
+        //displayGalleryPhoto(worksData);
+        //displayWorks(worksData);
+        //if response is negative report an error
+      //} else {
+        //alert("Erreur : " + response.status);
+        //closeModal;
+      //}
+    //});
+  //}
+
+const urlWorks = ("http://localhost:5678/api/works/")
+
+
+function deleteWork(id) {
+  const token = sessionStorage.setItem("Token", data.token);
+  const req = {
+    method: "DELETE",
+    headers: {
+      accept: "*/*",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  
+  //fetch(`${urlWorks}${id}`, req)
+  fetch(`${urlWorks}${id}`, req)
+    .then((res) => {
+      if (res.status === 204) {
+        // La photo a été supprimée avec succès
+        const galleryItem = document.querySelector(`[data-photo-id="${id}"]`);
+        console.log(galleryItem)
+        if (galleryItem) {
+          galleryItem.remove(); // Supprimez également l'élément de la galerie côté client
+        }
+        console.info("Item deleted");
+      } else if (res.status === 401) {
+        console.error("Unauthorized");
+      } else {
+        console.error("Unexpected behavior");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
-displayAddModal();  
+//deleteWork()
+
+// //
+
 // faire la prévisualisation
-const previewImg = document.getElementById("picture");
+const previewCon =document.getElementById("picturePreview")
+const previewImg = document.getElementById("picturePreviewImg");
 const inputFile = document.querySelector(".modalWrapper input");
 const labelFile = document.querySelector(".modalWrapper label");
-//const iconFile = document.querySelector(".modalWrapper .fa-image");
+const conIconeFile =document.getElementById("labelPhoto")
+const iconFile = document.querySelector("#picture");
 const pFile = document.getElementById("pp");
 
 //Ecouter les changement sur l'input file
 inputFile.addEventListener("change", () => {
+ 
   const file = inputFile.files[0];
   console.log(file);
   if (file) {
     const reader = new FileReader();
+    console.log(reader)
     reader.onload = function (e) {
       previewImg.src = e.target.result;
-      previewImg.style.display = "flex";
+      previewCon.style.display = "flex";
       labelFile.style.display = "none";
       //iconFile.style.display = "none";
+      conIconeFile.style.display = "none";
       pFile.style.display = "none";
     };
     reader.readAsDataURL(file);
+  }
+});
+
+//Faire un POST ajouter une photo
+const form = document.querySelector("form");
+console.log(form)
+const title = document.querySelector("#title");
+const category = document.querySelector("#selectCategory");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = {
+    title: title.value,
+    categoryId: category.value,
+    category: {
+      id: category.value,
+      name: category.options[category.selectedIndex].text,
+    },
+  };
+  try {
+    fetch("http://localhost:5678/api/works", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        //Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+      
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      sessionStorage.setItem("Token", data.token);
+
+      console.log("Nouvelle photo crée !" + data);
+    });
+  } catch (error) {
+    console.log("une erreur est survenue lors de l'envoi");
   }
 });
