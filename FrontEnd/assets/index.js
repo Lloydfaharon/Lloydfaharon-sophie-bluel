@@ -224,18 +224,21 @@ displayGaleriePhoto()
 //****************** function suprime (works) inside mode 1 **********************
 function deleteWithTrash() {
   const deleteBtn = document.querySelectorAll(".poub");
+  
   console.log(deleteBtn)
   //for (let i = 0; i < deleteBtn.length; i++) {
     //deleteBtn[i].addEventListener("click", deleteWork);
   //}
   deleteBtn.forEach(trash => {
+    const token = window.localStorage.getItem("token");
     trash.addEventListener("click" , (e) =>{
       const id = trash.id
       const init = {
         method:"DELETE",
-        headers:{"Content-Type": "application/json"
-
-        }
+        headers:{"content-Type": "application/json",
+        "accept":'*/*',
+        "authorization":`bearer ${token}`
+        },
       }
       fetch("http://localhost:5678/api/works/"+id,init)
       .then((response) =>{
