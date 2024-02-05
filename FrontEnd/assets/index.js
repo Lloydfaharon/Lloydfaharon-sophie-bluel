@@ -224,45 +224,143 @@ displayGaleriePhoto()
 //****************** function suprime (works) inside mode 1 **********************
 function deleteWithTrash() {
   const deleteBtn = document.querySelectorAll(".poub");
-  
   console.log(deleteBtn)
   //for (let i = 0; i < deleteBtn.length; i++) {
     //deleteBtn[i].addEventListener("click", deleteWork);
   //}
-  deleteBtn.forEach(trash => {
-    const token = window.localStorage.getItem("token");
-    trash.addEventListener("click" , (e) =>{
-      const id = trash.id
-      const init = {
-        method:"DELETE",
-        headers:{"content-Type": "application/json",
-        "accept":'*/*',
-        "authorization":`bearer ${token}`
-        },
+deleteBtn.forEach(trash => {
+  const token = window.sessionStorage.getItem("token");
+  trash.addEventListener("click" , (e) =>{
+    const id = trash.id
+    fetch(`http://localhost:5678/api/works/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': '*/*',
+        'Authorization': `Bearer ${token}`
       }
-      fetch("http://localhost:5678/api/works/"+id,init)
-      .then((response) =>{
-        if (!response.ok){
-          console.log ("ca marcghe pas ")
-        }
-        return response.json()
-      })
-      .then((data)=>{
-        
-        
-        console.log("la data reusi",data)
-        displayGaleriePhoto()
-        displayWorks()
-      })
-
     })
-
+    .then((response) =>{
+      if (!response.ok){
+        console.log ("ca marcghe pas ")
+      }
+      return response.json()
+    })
+    .then((data)=>{
+      console.log("la data reusi",data)
+      displayGaleriePhoto()
+      displayWorks()
+    })
   })
+})
 }
-
-
-
-
-//****************** function suprime (works) inside mode 1 **********************
+//****************** function afficher mode 2 **********************
 //******** constente ************
 
+const btnAddModal = document.getElementById("addPictureBtn");
+console.log(btnAddModal)
+const modalAddPix = document.getElementById("addPicture");
+const modalPix = document.getElementById("editGallery");
+const arrowL = document.querySelector(".modalHeader .fa-arrow-left");
+const markAdd = document.getElementById("closeModale2");
+
+
+function displayAddModal() {
+     
+  btnAddModal.addEventListener("click", () => {
+    modalAddPix.style.display = "flex";
+    modalPix.style.display = "none";
+  });
+  arrowL.addEventListener("click", () => {
+    modalAddPix.style.display = "none";
+    modalPix.style.display = "flex";
+  });
+  markAdd.addEventListener("click", () => {
+    modalCmt.style.display = "none";
+    window.location = "index.html";
+  });
+};
+
+displayAddModal(); 
+
+
+//****************** function ajouter (works) inside mode 1 **********************
+//******** constente ************
+
+// faire la prévisualisation
+const previewCon =document.getElementById("picturePreview")
+const previewImg = document.getElementById("picturePreviewImg");
+const inputFile = document.querySelector(".modalWrapper input");
+const labelFile = document.querySelector(".modalWrapper label");
+const conIconeFile =document.getElementById("labelPhoto")
+const iconFile = document.querySelector("#picture");
+const pFile = document.getElementById("pp");
+
+//Ecouter les changement sur l'input file
+inputFile.addEventListener("change", () => {
+ 
+  const file = inputFile.files[0];
+  console.log(file);
+  if (file) {
+    const reader = new FileReader();
+    console.log(reader)
+    reader.onload = function (e) {
+      previewImg.src = e.target.result;
+      previewCon.style.display = "flex";
+      labelFile.style.display = "none";
+      //iconFile.style.display = "none";
+      conIconeFile.style.display = "none";
+      pFile.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+//Faire un POST ajouter une photo
+
+
+function ajouterListenerEnvoyerPhoto(){
+
+   const title = document.querySelector("#title").value;
+   const categoryId = document.querySelector("#selectCategory").value;
+   const image = document.querySelector("#photo").files[0];
+   const form = document.querySelector("form");
+   console.log(form)
+
+   form.addEventListener("submit", async (e) => {
+   e.preventDefault();
+  
+    
+  
+    const formData = new FormData();
+          formData.append("title", title);
+          formData.append("category", categoryId);
+          formData.append("image", image);
+  
+  
+    const chargeUtile = JSON.stringify(formData);
+    const token = window.sessionStorage.getItem("token");
+
+    fetch("http://localhost:5678/api/works/", {
+        method: "POST",
+        headers: {
+          headers: {
+            'Accept': '*/*',
+            'Authorization': `Bearer ${token}`
+          }},
+        body: chargeUtile,
+        
+      })
+      .then((response) => response.json())
+      .then((data) => {
+
+        console.log("Nouvelle photo crée !" + data);
+      });
+    try {
+      
+    } catch (error) {
+      console.log("une erreur est survenue lors de l'envoi");
+    }
+  });
+  
+}
+ajouterListenerEnvoyerPhoto()
