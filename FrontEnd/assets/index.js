@@ -196,7 +196,7 @@ async function displayGaleriePhoto() {
     const trash = document.createElement("i")
 
 
-    trash.classList.add ("fa-solid","fa-trash-can",)
+    trash.classList.add ("fa-solid","fa-trash-can","poub")
     trash.setAttribute("id","poubelle")
     span.classList.add ("miniWork")
       
@@ -211,64 +211,55 @@ async function displayGaleriePhoto() {
 
   });
   // ne pas oublier d'ajouter la fonction deleteWork
-  containerModal.addEventListener ("click",(e) => {
-    console.log(e.target.id);
+  //containerModal.addEventListener ("click",(e) => {
+    //console.log(e.target.id);
    
-  });
+  //});
+
+  deleteWithTrash()
 }
 displayGaleriePhoto()
 
 
 //****************** function suprime (works) inside mode 1 **********************
 function deleteWithTrash() {
-  let deleteBtn = document.querySelectorAll("fa-solid,fa-trash-can");
+  const deleteBtn = document.querySelectorAll(".poub");
   console.log(deleteBtn)
-  for (let i = 0; i < deleteBtn.length; i++) {
-    deleteBtn[i].addEventListener("click", deleteWork);
-  }
+  //for (let i = 0; i < deleteBtn.length; i++) {
+    //deleteBtn[i].addEventListener("click", deleteWork);
+  //}
+  deleteBtn.forEach(trash => {
+    trash.addEventListener("click" , (e) =>{
+      const id = trash.id
+      const init = {
+        method:"DELETE",
+        headers:{"Content-Type": "application/json"
+
+        }
+      }
+      fetch("http://localhost:5678/api/works/"+id,init)
+      .then((response) =>{
+        if (!response.ok){
+          console.log ("ca marcghe pas ")
+        }
+        return response.json()
+      })
+      .then((data)=>{
+        
+        
+        console.log("la data reusi",data)
+        displayGaleriePhoto()
+        displayWorks()
+      })
+
+    })
+
+  })
 }
-deleteWithTrash()
+
 
 
 
 //****************** function suprime (works) inside mode 1 **********************
 //******** constente ************
-
-const urlWorks = ("http://localhost:5678/api/works/")
-
-
-function deleteWork(id) {
-  const token = sessionStorage.setItem("Token", data.token);
-  const req = {
-    method: "DELETE",
-    headers: {
-      accept: "*/*",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  
- 
-  fetch(`${urlWorks}${id}`, req)
-    .then((res) => {
-      if (res.status === 204) {
-        // La photo a été supprimée avec succès
-        const galleryItem = document.querySelector(`[data-photo-id="${id}"]`);
-        console.log(galleryItem)
-        if (galleryItem) {
-          galleryItem.remove(); // Supprimez également l'élément de la galerie côté client
-        }
-        console.info("Item deleted");
-      } else if (res.status === 401) {
-        console.error("Unauthorized");
-      } else {
-        console.error("Unexpected behavior");
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-deleteWork()
-
-
 
