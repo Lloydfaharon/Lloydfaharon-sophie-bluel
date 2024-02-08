@@ -122,7 +122,7 @@ async function adminUserMode() {
     document.querySelector("#portfolio h2").insertAdjacentHTML("afterend", editBtn);
     
 
-  }//else(loged == false)
+  }
 }
 
 adminUserMode()
@@ -158,7 +158,7 @@ function openModal(){
 
 openModal()
 
-//****************** function close mode 1 **********************
+//****************** function close modale 1 **********************
 
 
 function closeModal(){
@@ -177,7 +177,7 @@ function closeModal(){
 };
 closeModal()
 
-//****************** function put image (works) inside mode 1 **********************
+//****************** function put image (works) inside modale 1 **********************
 //******** constente ************
 
 const modalCmt = document.querySelector (".modalContent")
@@ -211,24 +211,16 @@ async function displayGaleriePhoto() {
 
   });
   // ne pas oublier d'ajouter la fonction deleteWork
-  //containerModal.addEventListener ("click",(e) => {
-    //console.log(e.target.id);
-   
-  //});
-
   deleteWithTrash()
 }
 displayGaleriePhoto()
 
 
-//****************** function suprime (works) inside mode 1 **********************
+//****************** function suprime (works) inside modale 1 **********************
 function deleteWithTrash() {
   const deleteBtn = document.querySelectorAll(".poub");
   console.log(deleteBtn)
-  //for (let i = 0; i < deleteBtn.length; i++) {
-    //deleteBtn[i].addEventListener("click", deleteWork);
-  //}
-deleteBtn.forEach(trash => {
+ deleteBtn.forEach(trash => {
   const token = window.sessionStorage.getItem("token");
   trash.addEventListener("click" , (e) =>{
     const id = trash.id
@@ -283,7 +275,7 @@ function displayAddModal() {
 displayAddModal(); 
 
 
-//****************** function ajouter (works) inside mode 1 **********************
+//****************** function ajouter (works) inside mode 2 **********************
 //******** constente ************
 
 // faire la prévisualisation
@@ -296,70 +288,67 @@ const iconFile = document.querySelector("#picture");
 const pFile = document.getElementById("pp");
 
 //Ecouter les changement sur l'input file
-inputFile.addEventListener("change", () => {
+function previsualiserWorksModal2(){
+  inputFile.addEventListener("change", () => {
  
-  const file = inputFile.files[0];
-  console.log(file);
-  if (file) {
-    const reader = new FileReader();
-    console.log(reader)
-    reader.onload = function (e) {
-      previewImg.src = e.target.result;
-      previewCon.style.display = "flex";
-      labelFile.style.display = "none";
-      //iconFile.style.display = "none";
-      conIconeFile.style.display = "none";
-      pFile.style.display = "none";
-    };
-    reader.readAsDataURL(file);
-  }
-});
+    const file = inputFile.files[0];
+    console.log(file);
+    if (file) {
+      const reader = new FileReader();
+      console.log(reader)
+      reader.onload = function (e) {
+        previewImg.src = e.target.result;
+        previewCon.style.display = "flex";
+        labelFile.style.display = "none";
+        conIconeFile.style.display = "none";
+        pFile.style.display = "none";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+previsualiserWorksModal2()
 
 //Faire un POST ajouter une photo
 
 
 function ajouterListenerEnvoyerPhoto(){
+  const form = document.querySelector("form");
 
-   const title = document.querySelector("#title").value;
-   const categoryId = document.querySelector("#selectCategory").value;
-   const image = document.querySelector("#photo").files[0];
-   const form = document.querySelector("form");
-   console.log(form)
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-   form.addEventListener("submit", async (e) => {
-   e.preventDefault();
-  
-    
-  
+    const title = document.querySelector("#title").value;
+    const categoryId = document.querySelector("#selectCategory").value;
+    const imageInput = document.querySelector("#photo");
+    const image = imageInput.files[0];
+
     const formData = new FormData();
-          formData.append("title", title);
-          formData.append("category", categoryId);
-          formData.append("image", image);
-  
-  
-    const chargeUtile = JSON.stringify(formData);
+    formData.append("title", title);
+    formData.append("category", categoryId);
+    formData.append("image", image);
+
     const token = window.sessionStorage.getItem("token");
 
-    fetch("http://localhost:5678/api/works/", {
-        method: "POST",
+    try{
+      const response = await fetch ("http://localhost:5678/api/works", {
+        method: "POST", 
         headers: {
-          headers: {
-            'Accept': '*/*',
-            'Authorization': `Bearer ${token}`
-          }},
-        body: chargeUtile,
-        
-      })
-      .then((response) => response.json())
-      .then((data) => {
-
-        console.log("Nouvelle photo crée !" + data);
+          'Accept': '*/*',
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData,
       });
-    try {
-      
+
+      if (!response.ok){
+        throw new Error (`Erreur HTTP ! Statut : ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Nouvelle photo crée !", data);
     } catch (error) {
-      console.log("une erreur est survenue lors de l'envoi");
-    }
+      console.error("une erreur est survenue lors de l'envoi:", error.message);    
+    } 
   });
   
 }
