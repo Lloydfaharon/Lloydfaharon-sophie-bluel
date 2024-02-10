@@ -127,7 +127,7 @@ async function adminUserMode() {
 
 adminUserMode()
 
-//****************** function admin user mode **********************
+//****************** function admin user mode disco **********************
 
 function disconected(){
   logout.addEventListener("click", () => {
@@ -281,11 +281,13 @@ displayAddModal();
 // faire la prévisualisation
 const previewCon =document.getElementById("picturePreview")
 const previewImg = document.getElementById("picturePreviewImg");
+console.log(previewImg)
 const inputFile = document.querySelector(".modalWrapper input");
 const labelFile = document.querySelector(".modalWrapper label");
-const conIconeFile =document.getElementById("labelPhoto")
+const conIconeFile =document.getElementById("labelPhoto");
 const iconFile = document.querySelector("#picture");
 const pFile = document.getElementById("pp");
+
 
 //Ecouter les changement sur l'input file
 function previsualiserWorksModal2(){
@@ -309,20 +311,59 @@ function previsualiserWorksModal2(){
 }
 previsualiserWorksModal2()
 
+
+const titleInput = document.getElementById("title");
+const categorySelect = document.getElementById("selectCategory");
+const imageInput = document.getElementById("photo");
+
+const btnValider = document.getElementById("valider");
+
+function verifierChampsRemplis() {
+ 
+  // Vérifier si tous les champs requis sont remplis
+  const champsRemplis = titleInput.value !== "" && categorySelect.value !== "" && imageInput.files.length > 0;
+
+  // Mettre à jour le style du bouton en fonction de l'état des champs
+  if (champsRemplis) {
+      btnValider.disabled = false; // Activer le bouton de validation
+      // pour changer la couleur du bouton
+      btnValider.style.backgroundColor = "#1D6154";
+  } else {
+      btnValider.disabled = true; // Désactiver le bouton de validation
+     // pour changer la couleur du bouton
+      btnValider.style.backgroundColor = "#A7A7A7";
+  }
+}
+
+// Appeler la fonction verifierChampsRemplis chaque fois qu'un champ est modifié
+document.getElementById("title").addEventListener("input", verifierChampsRemplis);
+document.getElementById("selectCategory").addEventListener("change", verifierChampsRemplis);
+document.getElementById("photo").addEventListener("change", verifierChampsRemplis);
+
+
 //Faire un POST ajouter une photo
 
-
 function ajouterListenerEnvoyerPhoto(){
-  const form = document.querySelector("form");
+  const form = document.getElementById("addPictureForm");
+  console.log(form)
+ 
+  
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+   
+   
 
     const title = document.querySelector("#title").value;
+    console.log(title )
     const categoryId = document.querySelector("#selectCategory").value;
+    console.log(categoryId)
     const imageInput = document.querySelector("#photo");
+    console.log(imageInput )
     const image = imageInput.files[0];
+    const validerBtn = document.querySelector("#valider");
 
+    
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", categoryId);
@@ -353,3 +394,16 @@ function ajouterListenerEnvoyerPhoto(){
   
 }
 ajouterListenerEnvoyerPhoto()
+
+
+
+
+
+
+
+
+
+
+
+
+
