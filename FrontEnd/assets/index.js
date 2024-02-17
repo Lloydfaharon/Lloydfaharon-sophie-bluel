@@ -272,6 +272,7 @@ function deleteWithTrash() {
     })
     .then((data)=>{
       //return response.json()
+      
       console.log("la data reusi",data)
       //mettre à jour l'affichage de la galerie et des œuvres.
       displayGaleriePhoto()
@@ -382,12 +383,12 @@ document.getElementById("photo").addEventListener("change", verifierChampsRempli
 //Fonction est définie pour envoyer une requête POST 
 //pour ajouter une nouvelle image lorsque le formulaire est soumis.
 
-function ajouterListenerEnvoyerPhoto(){
+async function ajouterListenerEnvoyerPhoto(){
   const form = document.getElementById("addPictureForm");
   console.log(form)
  
   form.addEventListener("submit", async (e) => {
-    //e.preventDefault();
+    e.preventDefault();
    
     const title = document.querySelector("#title").value;
     console.log(title )
@@ -420,16 +421,22 @@ function ajouterListenerEnvoyerPhoto(){
 
       if (!response.ok){
         throw new Error (`Erreur HTTP ! Statut : ${response.status}`);
-      }
+      }else{
 
       const data = await response.json();
       console.log("Nouvelle photo crée !", data);
+  
       displayGaleriePhoto()
       displayWorks()
+      
+      modalCmt.style.display = "none";
+      window.location = "index.html";
+      }
 
     } catch (error) {
       console.error("une erreur est survenue lors de l'envoi:", error.message);    
     } 
+   
   });
   
 }
