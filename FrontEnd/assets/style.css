@@ -218,7 +218,9 @@ input[type="submit"], button {
 
 }
 .imgGallery{
-	width: 80px;
+	width: 100%;
+    object-fit: cover;
+    height: 92%;
 
 }
 #contact, #login {
