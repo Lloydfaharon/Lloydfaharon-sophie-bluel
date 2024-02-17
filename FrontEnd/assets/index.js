@@ -424,8 +424,8 @@ function ajouterListenerEnvoyerPhoto(){
 
       const data = await response.json();
       console.log("Nouvelle photo crée !", data);
-      //displayGaleriePhoto()
-      //displayWorks()
+      displayGaleriePhoto()
+      displayWorks()
 
     } catch (error) {
       console.error("une erreur est survenue lors de l'envoi:", error.message);    
