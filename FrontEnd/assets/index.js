@@ -8,6 +8,8 @@ const filter = document.getElementById("filter")
 console.log(gallery);
 
 //****************** function return array works ******************//
+// cette fonction retourne le tableaux des works en envoyent une requet fetch a l'api
+//la reponce conveti en json
 
 async function getWorks() {
   const response = await fetch("http://localhost:5678/api/works");
@@ -16,10 +18,14 @@ async function getWorks() {
 getWorks();
 
 //****************** function creation espasce pour afficher image ******************//
+//l'affichage de toutes les works dans la galerie
 
 async function displayWorks() {
+  //vidée la galerie 
   gallery.innerHTML = "";
+
   const works = await getWorks ();
+  //boucle 
   works.forEach((work) => {
     affichageWorks(work);
   });
@@ -27,6 +33,7 @@ async function displayWorks() {
 displayWorks()
 
 //****************** function afficher image ******************//
+//crée dynamiquement les éléments HTML nécessaires pour afficher les works
 
 async function affichageWorks(work) {
    
@@ -53,11 +60,15 @@ getCategorys();
 //****************** function ajouter bouton categories ******************//
 
 async function getCategorysButtons(){
+  //récupère toutes les catégories depuis l'API
   const categorie = await getCategorys();
+
   console.log(categorie);
   categorie.forEach((category) => {
       const btn = document.createElement("button");
+      //catégorie en lettres majuscules 
       btn.textContent = category.name.toUpperCase();
+
       btn.id= category.id;
       filter.appendChild(btn);
       btn.classList.add("filterButtonAll")
@@ -69,12 +80,19 @@ getCategorysButtons()
 //****************** function ajouter bouton categories *****************
 
 async function filtercategory(){
+  //attendre que la fonction récupère toutes les works
   const allCategorie= await getWorks();
+
   console.log(allCategorie)
+  //sélectionner toutes les boutons
   const boutons = document.querySelectorAll(".filter button");
+
   boutons.forEach((bouton) => {
       bouton.addEventListener("click", (e) => {
+        //récupèrer l'ID du bouton sur lequel l'utilisateur a cliqué 
           btnId= e.target.id
+
+          //mettre à jour le contenu 
           gallery.innerHTML=""
           if (btnId !== "0") {
               const worksTriCategorie = allCategorie.filter((work) => {
@@ -84,6 +102,7 @@ async function filtercategory(){
                   affichageWorks(work);
               })
           }else{
+              //affiche toutes les works
               displayWorks();
           }
           console.log(btnId)
@@ -103,7 +122,7 @@ const editBtn = `<p class="editBtn"><i class="fa-regular fa-pen-to-square"></i>M
 
 async function adminUserMode() {
   if (loged == true){
-    //Hide filter
+    //cacher filter
     filter.style.display="none"
 
     //change login to logout
@@ -132,8 +151,10 @@ adminUserMode()
 function disconected(){
   logout.addEventListener("click", () => {
 
+    //supprime le jeton d'authentification 
     sessionStorage.removeItem("Token");
     window.sessionStorage.setItem("isConnected", JSON.stringify(false));
+    //redirige l'utilisateur vers la page de connexion
     window.location.replace("login.html");
          
   });  
@@ -184,7 +205,10 @@ const modalCmt = document.querySelector (".modalContent")
 console.log(modalCmt)
 
 async function displayGaleriePhoto() {
+  //vide le contenu de l'élément 
   modalCmt.innerHTML= ""
+
+  //récupère les données des œuvres à partir de l'API
 
   const photo = await getWorks();
   console.log(photo)
@@ -218,27 +242,38 @@ displayGaleriePhoto()
 
 //****************** function suprime (works) inside modale 1 **********************
 function deleteWithTrash() {
+
+  //sélectionne tous les éléments HTML avec la classe "poub"
   const deleteBtn = document.querySelectorAll(".poub");
   console.log(deleteBtn)
+
+  //boucle à travers tous les éléments sélectionnés et ajoute un écouteur d'événements "click"
  deleteBtn.forEach(trash => {
+  //jeton
   const token = window.sessionStorage.getItem("token");
   trash.addEventListener("click" , (e) =>{
     const id = trash.id
+    //requête DELETE est envoyée à l'API 
     fetch(`http://localhost:5678/api/works/${id}`, {
       method: 'DELETE',
       headers: {
+        //accept tout type de contenu
         'Accept': '*/*',
         'Authorization': `Bearer ${token}`
       }
     })
     .then((response) =>{
+      
       if (!response.ok){
         console.log ("ca marcghe pas ")
       }
-      return response.json()
+      //converties en JSON 
+      //return response.json()
     })
     .then((data)=>{
+      //return response.json()
       console.log("la data reusi",data)
+      //mettre à jour l'affichage de la galerie et des œuvres.
       displayGaleriePhoto()
       displayWorks()
     })
@@ -296,8 +331,10 @@ function previsualiserWorksModal2(){
     const file = inputFile.files[0];
     console.log(file);
     if (file) {
+      //objet FileReader est créé pour permettre la lecture du contenu du fichier
       const reader = new FileReader();
       console.log(reader)
+      //Un événement onload est défini sur le FileReader pour s'exécuter lorsque la lecture du fichier est terminée avec succès.
       reader.onload = function (e) {
         previewImg.src = e.target.result;
         previewCon.style.display = "flex";
@@ -342,18 +379,16 @@ document.getElementById("photo").addEventListener("change", verifierChampsRempli
 
 
 //Faire un POST ajouter une photo
+//Fonction est définie pour envoyer une requête POST 
+//pour ajouter une nouvelle image lorsque le formulaire est soumis.
 
 function ajouterListenerEnvoyerPhoto(){
   const form = document.getElementById("addPictureForm");
   console.log(form)
  
-  
-
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
    
-   
-
     const title = document.querySelector("#title").value;
     console.log(title )
     const categoryId = document.querySelector("#selectCategory").value;
@@ -363,12 +398,14 @@ function ajouterListenerEnvoyerPhoto(){
     const image = imageInput.files[0];
     const validerBtn = document.querySelector("#valider");
 
-    
+
+    //Création d'un objet FormData pour encapsuler les données du formulaire (titre, catégorie et image).
     const formData = new FormData();
     formData.append("title", title);
     formData.append("category", categoryId);
     formData.append("image", image);
 
+    //Récupération du jeton d'authentification de l'utilisateur à partir de la session.
     const token = window.sessionStorage.getItem("token");
 
     try{
@@ -387,6 +424,9 @@ function ajouterListenerEnvoyerPhoto(){
 
       const data = await response.json();
       console.log("Nouvelle photo crée !", data);
+      //displayGaleriePhoto()
+      //displayWorks()
+
     } catch (error) {
       console.error("une erreur est survenue lors de l'envoi:", error.message);    
     } 
@@ -394,16 +434,3 @@ function ajouterListenerEnvoyerPhoto(){
   
 }
 ajouterListenerEnvoyerPhoto()
-
-
-
-
-
-
-
-
-
-
-
-
-
