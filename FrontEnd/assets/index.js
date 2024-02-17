@@ -277,6 +277,8 @@ function deleteWithTrash() {
       //mettre à jour l'affichage de la galerie et des œuvres.
       displayGaleriePhoto()
       displayWorks()
+      modalCmt.style.display = "none";
+      window.location = "index.html";
     })
   })
 })
