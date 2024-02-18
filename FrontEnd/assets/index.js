@@ -277,8 +277,8 @@ function deleteWithTrash() {
       //mettre à jour l'affichage de la galerie et des œuvres.
       displayGaleriePhoto()
       displayWorks()
-      modalCmt.style.display = "none";
-      window.location = "index.html";
+      containerModal.style.display = "none";
+      
     })
   })
 })
@@ -305,8 +305,14 @@ function displayAddModal() {
     modalPix.style.display = "flex";
   });
   markAdd.addEventListener("click", () => {
-    modalCmt.style.display = "none";
-    window.location = "index.html";
+    //modalCmt.style.display = "none";
+    //modalAddPix.style.display = "none";
+   //window.location = "index.html";
+   //containerModal.style.display = "none";
+
+   modalAddPix.style.display = "none";
+   modalPix.style.display = "flex";
+   containerModal.style.display = "none";
   });
 };
 
@@ -423,23 +429,44 @@ async function ajouterListenerEnvoyerPhoto(){
 
       if (!response.ok){
         throw new Error (`Erreur HTTP ! Statut : ${response.status}`);
-      }else{
 
-      const data = await response.json();
-      console.log("Nouvelle photo crée !", data);
-  
+      }else{
+        const data = await response.json();
+        console.log("Nouvelle photo crée !", data);
+      }
+      
       displayGaleriePhoto()
       displayWorks()
-      
-      modalCmt.style.display = "none";
-      window.location = "index.html";
-      }
+      resetModal()
 
     } catch (error) {
       console.error("une erreur est survenue lors de l'envoi:", error.message);    
     } 
    
   });
-  
 }
 ajouterListenerEnvoyerPhoto()
+
+function resetModal() {
+  // Remise à zéro de l'image prévisualisée
+  previewImg.src = "";
+  previewCon.style.display = "none";
+  labelFile.style.display = "flex";
+  conIconeFile.style.display = "flex";
+  pFile.style.display = "flex";
+  
+  modalAddPix.style.display = "none";
+  modalPix.style.display = "flex";
+  containerModal.style.display = "none";
+
+  // Remise à zéro du titre, de la catégorie et de l'image sélectionnée
+  titleInput.value = "";
+  imageInput.value = "";
+
+  // Vérification des champs remplis pour activer ou désactiver le bouton de validation
+  verifierChampsRemplis();
+}
+
+// Appel de la fonction resetModal pour la réinitialisation de la modal
+
+
